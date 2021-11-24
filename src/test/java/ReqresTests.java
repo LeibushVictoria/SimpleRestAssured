@@ -1,8 +1,9 @@
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static io.restassured.RestAssured.get;
+import static filters.CustomLogFilter.customLogFilter;
 import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.delete;
 import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -10,8 +11,11 @@ import static org.hamcrest.Matchers.notNullValue;
 public class ReqresTests {
 
     @Test
+    @DisplayName("GET List user")
     void getListUser() {
-        get("https://reqres.in/api/users?page=2")
+        given()
+                .filter(customLogFilter().withCustomTemplates())
+                .get("https://reqres.in/api/users?page=2")
                 .then()
                 .statusCode(200)
                 .body("page", is(2))
@@ -21,8 +25,11 @@ public class ReqresTests {
     }
 
     @Test
+    @DisplayName("GET Single user")
     void getSingleUser() {
-        get("https://reqres.in/api/users/2")
+        given()
+                .filter(customLogFilter().withCustomTemplates())
+                .get("https://reqres.in/api/users/2")
                 .then()
                 .statusCode(200)
                 .body("data.id", is(2))
@@ -35,15 +42,20 @@ public class ReqresTests {
     }
 
     @Test
+    @DisplayName("GET Single user not found")
     void getSingleUserNotFound() {
-        get("https://reqres.in/api/users/23")
+        given()
+                .filter(customLogFilter().withCustomTemplates())
+                .get("https://reqres.in/api/users/23")
                 .then()
                 .statusCode(404);
     }
 
     @Test
+    @DisplayName("POST Create user")
     void postCreateUser() {
         given()
+                .filter(customLogFilter().withCustomTemplates())
                 .contentType(JSON)
                 .body("{\"name\": \"morpheus\"," + "\"job\": \"leader\"}")
                 .when()
@@ -57,8 +69,10 @@ public class ReqresTests {
     }
 
     @Test
+    @DisplayName("PUT update user")
     void putUpdateUser() {
         given()
+                .filter(customLogFilter().withCustomTemplates())
                 .contentType(JSON)
                 .body("{\"name\": \"morpheus\"," + "\"job\": \"zion resident\"}")
                 .when()
@@ -71,8 +85,10 @@ public class ReqresTests {
     }
 
     @Test
+    @DisplayName("PATCH Update user")
     void patchUpdateUser() {
         given()
+                .filter(customLogFilter().withCustomTemplates())
                 .contentType(JSON)
                 .body("{\"name\": \"morpheus\"," + "\"job\": \"zion resident\"}")
                 .when()
@@ -85,15 +101,20 @@ public class ReqresTests {
     }
 
     @Test
+    @DisplayName("DELETE user")
     void deleteUser() {
-        delete("https://reqres.in/api/users/2")
+        given()
+                .filter(customLogFilter().withCustomTemplates())
+                .delete("https://reqres.in/api/users/2")
                 .then()
                 .statusCode(204);
     }
 
     @Test
+    @DisplayName("POST Successful register")
     void successfulRegister() {
         given()
+                .filter(customLogFilter().withCustomTemplates())
                 .contentType(JSON)
                 .body("{\"email\": \"eve.holt@reqres.in\"," + "\"password\": \"pistol\"}")
                 .when()
@@ -105,8 +126,10 @@ public class ReqresTests {
     }
 
     @Test
+    @DisplayName("POST Unsuccessful register")
     void unsuccessfulRegister() {
         given()
+                .filter(customLogFilter().withCustomTemplates())
                 .contentType(JSON)
                 .body("{\"email\": \"sydney@fife\"}")
                 .when()
@@ -117,8 +140,10 @@ public class ReqresTests {
     }
 
     @Test
+    @DisplayName("POST Successful login")
     void successfulLogin() {
         given()
+                .filter(customLogFilter().withCustomTemplates())
                 .contentType(JSON)
                 .body("{\"email\": \"eve.holt@reqres.in\"," + "\"password\": \"cityslicka\"}")
                 .when()
@@ -129,8 +154,10 @@ public class ReqresTests {
     }
 
     @Test
+    @DisplayName("POST Unsuccessful login")
     void unsuccessfulLogin() {
         given()
+                .filter(customLogFilter().withCustomTemplates())
                 .contentType(JSON)
                 .body("{\"email\": \"peter@klaven\"}")
                 .when()
