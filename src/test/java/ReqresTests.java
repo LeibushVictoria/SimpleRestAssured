@@ -1,69 +1,84 @@
-import org.junit.jupiter.api.BeforeAll;
+import lombok.RegisterData;
+import lombok.UserWithJob;
+import models.UserData;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static filters.CustomLogFilter.customLogFilter;
 import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static specifications.Specs.request;
+import static specifications.Specs.responseSpec;
 
 public class ReqresTests {
 
+    //Using Groovy
     @Test
     @DisplayName("GET List user")
     void getListUser() {
         given()
+                .spec(request)
                 .filter(customLogFilter().withCustomTemplates())
-                .get("https://reqres.in/api/users?page=2")
+                .when()
+                .get("/users?page=2")
                 .then()
-                .statusCode(200)
-                .body("page", is(2))
-                .body("total", is(12))
-                .body("support.url", is("https://reqres.in/#support-heading"))
-                .body("support.text", is("To keep ReqRes free, contributions towards server costs are appreciated!"));
+                .spec(responseSpec)
+                .log().body()
+                .body("data.findAll{it.email =~/.*?@reqres.in/}.email.flatten()",
+                        hasItem("lindsay.ferguson@reqres.in"));
     }
 
+    //Using Model
     @Test
     @DisplayName("GET Single user")
     void getSingleUser() {
-        given()
+        UserData data = given()
+                .spec(request)
                 .filter(customLogFilter().withCustomTemplates())
-                .get("https://reqres.in/api/users/2")
+                .when()
+                .get("/users/2")
                 .then()
-                .statusCode(200)
-                .body("data.id", is(2))
-                .body("data.email", is("janet.weaver@reqres.in"))
-                .body("data.first_name", is("Janet"))
-                .body("data.last_name", is("Weaver"))
-                .body("data.avatar", is("https://reqres.in/img/faces/2-image.jpg"))
-                .body("support.url", is("https://reqres.in/#support-heading"))
-                .body("support.text", is("To keep ReqRes free, contributions towards server costs are appreciated!"));
+                .spec(responseSpec)
+                .log().body()
+                .extract().as(UserData.class);
+        assertEquals(2, data.getData().getId());
+        assertEquals("janet.weaver@reqres.in", data.getData().getEmail());
+        assertEquals("Janet", data.getData().getFirstName());
+        assertEquals("Weaver", data.getData().getLastName());
     }
 
     @Test
     @DisplayName("GET Single user not found")
     void getSingleUserNotFound() {
         given()
+                .spec(request)
                 .filter(customLogFilter().withCustomTemplates())
-                .get("https://reqres.in/api/users/23")
+                .when()
+                .get("/users/23")
                 .then()
+                .log().body()
                 .statusCode(404);
     }
 
+    //Using Lombok Model
     @Test
     @DisplayName("POST Create user")
     void postCreateUser() {
+        UserWithJob userWithJob = UserWithJob.builder()
+                .name("morpheus")
+                .job("leader")
+                .build();
         given()
+                .spec(request)
                 .filter(customLogFilter().withCustomTemplates())
-                .contentType(JSON)
-                .body("{\"name\": \"morpheus\"," + "\"job\": \"leader\"}")
+                .body(userWithJob)
                 .when()
-                .post("https://reqres.in/api/users")
+                .post("/users")
                 .then()
-                .statusCode(201)
-                .body("name", is("morpheus"))
-                .body("job", is("leader"))
+                .log().body()
+                .body("name", is(userWithJob.getName()))
+                .body("job", is(userWithJob.getJob()))
                 .body("id", is(notNullValue()))
                 .body("createdAt", is(notNullValue()));
     }
@@ -71,32 +86,42 @@ public class ReqresTests {
     @Test
     @DisplayName("PUT update user")
     void putUpdateUser() {
+        UserWithJob userWithJob = UserWithJob.builder()
+                .name("morpheus")
+                .job("zion resident")
+                .build();
         given()
+                .spec(request)
                 .filter(customLogFilter().withCustomTemplates())
-                .contentType(JSON)
-                .body("{\"name\": \"morpheus\"," + "\"job\": \"zion resident\"}")
+                .body(userWithJob)
                 .when()
-                .put("https://reqres.in/api/users/2")
+                .put("/users/2")
                 .then()
-                .statusCode(200)
-                .body("name", is("morpheus"))
-                .body("job", is("zion resident"))
+                .spec(responseSpec)
+                .log().body()
+                .body("name", is(userWithJob.getName()))
+                .body("job", is(userWithJob.getJob()))
                 .body("updatedAt", is(notNullValue()));
     }
 
     @Test
     @DisplayName("PATCH Update user")
     void patchUpdateUser() {
+        UserWithJob userWithJob = UserWithJob.builder()
+                .name("morpheus")
+                .job("zion resident")
+                .build();
         given()
+                .spec(request)
                 .filter(customLogFilter().withCustomTemplates())
-                .contentType(JSON)
-                .body("{\"name\": \"morpheus\"," + "\"job\": \"zion resident\"}")
+                .body(userWithJob)
                 .when()
-                .patch("https://reqres.in/api/users/2")
+                .patch("/users/2")
                 .then()
-                .statusCode(200)
-                .body("name", is("morpheus"))
-                .body("job", is("zion resident"))
+                .spec(responseSpec)
+                .log().body()
+                .body("name", is(userWithJob.getName()))
+                .body("job", is(userWithJob.getJob()))
                 .body("updatedAt", is(notNullValue()));
     }
 
@@ -104,23 +129,30 @@ public class ReqresTests {
     @DisplayName("DELETE user")
     void deleteUser() {
         given()
+                .spec(request)
                 .filter(customLogFilter().withCustomTemplates())
-                .delete("https://reqres.in/api/users/2")
+                .delete("/users/2")
                 .then()
+                .log().body()
                 .statusCode(204);
     }
 
     @Test
     @DisplayName("POST Successful register")
     void successfulRegister() {
+        RegisterData registerData = RegisterData.builder()
+                .email("eve.holt@reqres.in")
+                .password("pistol")
+                .build();
         given()
+                .spec(request)
                 .filter(customLogFilter().withCustomTemplates())
-                .contentType(JSON)
-                .body("{\"email\": \"eve.holt@reqres.in\"," + "\"password\": \"pistol\"}")
+                .body(registerData)
                 .when()
-                .post("https://reqres.in/api/register")
+                .post("/register")
                 .then()
-                .statusCode(200)
+                .spec(responseSpec)
+                .log().body()
                 .body("id", is(notNullValue()))
                 .body("token", is("QpwL5tke4Pnpja7X4"));
     }
@@ -128,13 +160,17 @@ public class ReqresTests {
     @Test
     @DisplayName("POST Unsuccessful register")
     void unsuccessfulRegister() {
+        RegisterData registerData = RegisterData.builder()
+                .email("sydney@fife")
+                .build();
         given()
+                .spec(request)
                 .filter(customLogFilter().withCustomTemplates())
-                .contentType(JSON)
-                .body("{\"email\": \"sydney@fife\"}")
+                .body(registerData)
                 .when()
-                .post("https://reqres.in/api/register")
+                .post("/register")
                 .then()
+                .log().body()
                 .statusCode(400)
                 .body("error", is("Missing password"));
     }
@@ -142,27 +178,36 @@ public class ReqresTests {
     @Test
     @DisplayName("POST Successful login")
     void successfulLogin() {
+        RegisterData registerData = RegisterData.builder()
+                .email("eve.holt@reqres.in")
+                .password("cityslicka")
+                .build();
         given()
+                .spec(request)
                 .filter(customLogFilter().withCustomTemplates())
-                .contentType(JSON)
-                .body("{\"email\": \"eve.holt@reqres.in\"," + "\"password\": \"cityslicka\"}")
+                .body(registerData)
                 .when()
-                .post("https://reqres.in/api/login")
+                .post("/login")
                 .then()
-                .statusCode(200)
+                .spec(responseSpec)
+                .log().body()
                 .body("token", is("QpwL5tke4Pnpja7X4"));
     }
 
     @Test
     @DisplayName("POST Unsuccessful login")
     void unsuccessfulLogin() {
+        RegisterData registerData = RegisterData.builder()
+                .email("peter@klaven")
+                .build();
         given()
+                .spec(request)
                 .filter(customLogFilter().withCustomTemplates())
-                .contentType(JSON)
-                .body("{\"email\": \"peter@klaven\"}")
+                .body(registerData)
                 .when()
-                .post("https://reqres.in/api/login")
+                .post("/login")
                 .then()
+                .log().body()
                 .statusCode(400)
                 .body("error", is("Missing password"));
     }
