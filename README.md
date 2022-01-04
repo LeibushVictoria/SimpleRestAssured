@@ -1,9 +1,9 @@
 # Проект с автотестами для сайта [reqres.in](https://reqres.in/)
 
 ## :gear: Стек технологий:
-| IDEA | Java | Selenide | Rest-Assured | Allure Report | Gradle | Junit5 | GitHub | Jenkins | Allure TO |
-|:--------:|:-------------:|:---------:|:-------:|:----:|:------:|:----:|:----:|:------:|:------:|:--------:|
-| <img src="images/Intelij_IDEA.svg" width="40" height="40"> | <img src="images/JAVA.svg" width="40" height="40"> | <img src="images/Selenide.svg" width="40" height="40"> | <img src="images/Rest-Assured.svg" width="40" height="40"> | <img src="images/Allure_Report.svg" width="40" height="40"> | <img src="images/Gradle.svg" width="40" height="40"> | <img src="images/Junit5.svg" width="40" height="40"> | <img src="images/GitHub.svg" width="40" height="40"> | <img src="images/Jenkins.svg" width="40" height="40"> | <img src="images/Allure_TO.svg" width="40" height="40"> |
+| IDEA | Java | Selenide | Rest-Assured | Allure Report | Gradle | Junit5 | GitHub | Jenkins |
+|:--------:|:-------------:|:---------:|:-------:|:----:|:------:|:----:|:----:|:------:|
+| <img src="images/Intelij_IDEA.svg" width="40" height="40"> | <img src="images/JAVA.svg" width="40" height="40"> | <img src="images/Selenide.svg" width="40" height="40"> | <img src="images/Rest-Assured.svg" width="40" height="40"> | <img src="images/Allure_Report.svg" width="40" height="40"> | <img src="images/Gradle.svg" width="40" height="40"> | <img src="images/Junit5.svg" width="40" height="40"> | <img src="images/GitHub.svg" width="40" height="40"> | <img src="images/Jenkins.svg" width="40" height="40"> |
 ___
 
 ## :heavy_check_mark: Тестируемая функциональность
