@@ -19,7 +19,7 @@ ___
 - Неуспешная авторизация пользователя
 
 ## :pushpin: В качестве CI системы использован Jenkins
-### [Проект](https://jenkins.autotests.cloud/job/08-levikss-rest_api_allure//)
+### [Проект](https://jenkins.autotests.cloud/job/08-levikss-rest_api_allure/)
 
 ![alt "Jenkins"](./images/Jenkins.png "Jenkins")
 
